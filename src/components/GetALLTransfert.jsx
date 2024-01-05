@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "react-bootstrap";
+import { Button, Form,Modal  } from "react-bootstrap";
+import "../style.css"
 
 const GetALLTransfert = () => {
-  const itemsPerPage = 9; 
+  const itemsPerPage = 9;
   const [transferts, setTransferts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const transfertsArray = [];
@@ -22,9 +24,20 @@ const GetALLTransfert = () => {
     setTransferts(transfertsArray);
   }, []);
 
-  const totalPages = Math.ceil(transferts.length / itemsPerPage);
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filteredTransferts = transferts.filter((transfert) =>
+    transfert.reference.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredTransferts.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
+  const [showModal, setShowModal] = useState(false);
+  const [selectedTransfert, setSelectedTransfert] = useState(null);
+
 
   return (
     <div
@@ -47,9 +60,19 @@ const GetALLTransfert = () => {
           marginTop: "89px",
         }}
       >
+         <div style={{ marginBottom: "10px" }}>
+  <input
+    type="text"
+    placeholder="Rechercher par référence..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    style={{ padding: "5px", width: "100%", boxSizing: "border-box" }}
+  />
+</div>
         <h1 style={{ textAlign: "center", color: "#140C48", fontFamily: "cursive" }}>Liste des transferts</h1>
+       
         <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap" }}>
-          {transferts.slice(startIndex, endIndex).map((transfert) => (
+          {filteredTransferts.slice(startIndex, endIndex).map((transfert) => (
             <div key={transfert.id} style={{ width: "30%" }}>
               <div style={{ marginBottom: "20px", borderBottom: "1px solid #ccc", paddingBottom: "10px" }}>
                 <strong>Expéditeur :</strong> {transfert.id_expediteur}
@@ -101,16 +124,36 @@ const GetALLTransfert = () => {
                       transition: "background-color 0.3s",
                     }}
                     onMouseOver={(e) => (e.target.style.backgroundColor = "#5844D8")}
-                    onMouseOut={(e) => (e.target.style.backgroundColor = "#140C48")}
-                  >
+                    onMouseOut={(e) => (e.target.style.backgroundColor = "#140C48")} >
                     Débloquer
                   </Button>
+                  <Button
+                      onClick={() => {
+                        setShowModal(true);
+                        setSelectedTransfert(transfert);
+                      }}
+                      style={{
+                        backgroundColor: "#140C48",
+                        color: "#FFFFFF",
+                        margin: "10px",
+                        border: "1px solid #140C48",
+                        borderRadius: "4px",
+                        width: "50%",
+                        height: "40px",
+                        transition: "background-color 0.3s",
+                      }}
+                      onMouseOver={(e) => (e.target.style.backgroundColor = "#5844D8")}
+                    onMouseOut={(e) => (e.target.style.backgroundColor = "#140C48")}
+         >
+          Détails
+        </Button>
                 </div>
               </div>
             </div>
           ))}
         </div>
       </div>
+      
       <div style={{ display: "flex", marginBottom: "20px" }}>
         {[...Array(totalPages)].map((_, index) => (
           <Button
@@ -127,8 +170,38 @@ const GetALLTransfert = () => {
           >
             {index + 1}
           </Button>
+            
         ))}
       </div>
+      {showModal && (
+        <Modal
+          show={showModal}
+          onHide={() => setShowModal(false)}
+          dialogClassName="custom-modal"
+        >
+          <Modal.Header >
+            <Modal.Title> <h2>Détails du transfert</h2></Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="modal-content">
+            <p> <strong>ID Expéditeur :</strong> {selectedTransfert?.id_expediteur}</p>
+            <p> <strong>Reference du transfert :</strong> {selectedTransfert?.reference}</p>
+            <p> <strong>Nom du benefeciare : </strong> {selectedTransfert?.nom_beneficiaire}</p>
+            <p> <strong>GSM du benefeciare : </strong> </p>
+            <p> <strong>Le status du transfert : </strong>{selectedTransfert?.status}</p>
+            <p> <strong>Type de transfert: </strong> </p>
+            <p> <strong>Le montant : </strong></p>
+            
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowModal(false)}>
+              Fermer
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      )}
+
+
+
     </div>
   );
 };
