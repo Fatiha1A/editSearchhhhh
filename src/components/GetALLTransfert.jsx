@@ -10,6 +10,8 @@ const GetALLTransfert = () => {
 
   useEffect(() => {
     const transfertsArray = [];
+    const startDate = new Date();  
+const endDate = new Date(); 
     for (let i = 0; i < 25; i++) {
       const transfert = {
         id: i,
@@ -18,6 +20,10 @@ const GetALLTransfert = () => {
         prenom_beneficiaire: `${Math.random().toString(36).substring(2, 8)} Doe`,
         reference: `${Math.random().toString(36).substring(2, 8)}-${Math.random().toString(36).substring(2, 8)}`,
         status: `En cours`,
+          GSM_beneficiaire: "+212 " + Math.floor(Math.random() * 1000000000).toString().padStart(9, '0'),
+          type_de_transfert: ["Console Agent", "Wallet", "GAB BOA"][Math.floor(Math.random() * 3)],
+          montant: Math.floor(Math.random() * 80001),
+          
       };
       transfertsArray.push(transfert);
     }
@@ -60,17 +66,22 @@ const GetALLTransfert = () => {
           marginTop: "89px",
         }}
       >
-         <div style={{ marginBottom: "10px" }}>
+        
+        <h1 style={{ textAlign: "center", color: "#140C48", fontFamily: "cursive" }}>Liste des transferts</h1>
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "10px" }}>
   <input
     type="text"
     placeholder="Rechercher par référence..."
     value={searchTerm}
     onChange={(e) => setSearchTerm(e.target.value)}
-    style={{ padding: "5px", width: "100%", boxSizing: "border-box" }}
+    style={{
+      padding: "5px",
+      width: "200px", // Ajustez la largeur selon vos besoins
+      boxSizing: "border-box",
+    }}
   />
 </div>
-        <h1 style={{ textAlign: "center", color: "#140C48", fontFamily: "cursive" }}>Liste des transferts</h1>
-       
+<br></br>
         <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap" }}>
           {filteredTransferts.slice(startIndex, endIndex).map((transfert) => (
             <div key={transfert.id} style={{ width: "30%" }}>
@@ -184,12 +195,13 @@ const GetALLTransfert = () => {
           </Modal.Header>
           <Modal.Body className="modal-content">
             <p> <strong>ID Expéditeur :</strong> {selectedTransfert?.id_expediteur}</p>
-            <p> <strong>Reference du transfert :</strong> {selectedTransfert?.reference}</p>
-            <p> <strong>Nom du benefeciare : </strong> {selectedTransfert?.nom_beneficiaire}</p>
-            <p> <strong>GSM du benefeciare : </strong> </p>
+            <p> <strong>Référence du transfert :</strong> {selectedTransfert?.reference}</p>
+            <p> <strong>Nom et prénom du benefeciare : </strong> {selectedTransfert?.nom_beneficiaire}</p>
+            <p> <strong>GSM du bénéficiaire : </strong> {selectedTransfert?.GSM_beneficiaire}</p>
             <p> <strong>Le status du transfert : </strong>{selectedTransfert?.status}</p>
-            <p> <strong>Type de transfert: </strong> </p>
-            <p> <strong>Le montant : </strong></p>
+            <p> <strong>Type de transfert : </strong>{selectedTransfert?.type_de_transfert} </p>
+            <p> <strong>Le montant : </strong>{selectedTransfert?.montant} DH</p>
+           
             
           </Modal.Body>
           <Modal.Footer>
